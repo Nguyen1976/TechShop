@@ -1,6 +1,16 @@
+import TypeProduct from "../../components/TypeProduct/TypeProduct";
+import { WrapperTypeProduct } from "./style";
+
 function HomePage() {
+    const arr = ['TV', 'Tu lanh', 'Laptop'];
     return ( 
-        <h1>Home Page</h1>
+        <div style={{ padding: '0 120px' }}>
+            <WrapperTypeProduct>
+                {arr.map((item) => (
+                    <TypeProduct name={item} key={item}/>
+                ))}
+            </WrapperTypeProduct>
+        </div>
     );
 }
 
