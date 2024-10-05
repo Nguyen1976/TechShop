@@ -1,10 +1,10 @@
 import React from 'react';
-import { Col, Input } from 'antd';
+import { Col } from 'antd';
 import { WrapperHeader, WrapperHeaderAccount, WrapperTextHeader, WrapperTextHeaderCenter, WrapperTextHeaderSmall } from './style';
 import { CaretDownOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
+import ButtonInputSearch from '../ButtonInputSearch/ButtonInputSearch';
 
 
-const { Search } = Input;
 
 function HeaderComponent() {
     return (  
@@ -16,11 +16,10 @@ function HeaderComponent() {
                     </WrapperTextHeader>
                 </WrapperTextHeaderCenter>
                 <Col span={12}>
-                    <Search
-                        placeholder="input search text"
-                        allowClear
-                        enterButton="Search"
-                        size="large"
+                    <ButtonInputSearch
+                        size='large'
+                        placeholder='Tìm kiếm sản phẩm'
+                        textButton='Tìm kiếm'
                     />
                 </Col>
                 <WrapperTextHeaderCenter span={8}>
