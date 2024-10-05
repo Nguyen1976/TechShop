@@ -1,6 +1,6 @@
 function TypeProduct({ name }) {
     return (  
-        <h1>{name}</h1>
+        <h4>{name}</h4>
     );
 }
 
