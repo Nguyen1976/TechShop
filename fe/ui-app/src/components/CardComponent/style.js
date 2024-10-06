@@ -9,6 +9,7 @@ export const WrapperCardStyle = styled(Card)`
         object-fit: cover;
     }
     position: relative;
+    margin: 5px;
 `
 
 export const StyleNameProduct = styled.div`
