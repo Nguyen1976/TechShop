@@ -9,16 +9,18 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true })); // Phân tích cú pháp URL-encoded
 
 routes(app);
 
-app.use(bodyParser.json());
 
 mongoose.connect(process.env.MONGO_DB)
     .then(() => {
         console.log('Connected to MongoDB');
     })
     .catch(err => {
+        console.error(err);
         console.log('Error connecting to MongoDB');
     })
 

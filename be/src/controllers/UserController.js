@@ -2,12 +2,54 @@ const UserService = require('../services/UserService');
 
 const createUser = async (req, res) => {
     try {
-        console.log(req.body);
-        const user = await UserService.createUser(req.body); //đợi service xử lý logic
-        return res.status(200).json({
-            message: 'User created successfully',
-            data: user // Trả về dữ liệu người dùng đã tạo
+        const { name, email, password, confirmPassword, phone } = req.body;
+        const reg =
+        /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+        const isCheckEmail = reg.test(email);
+        if(!name || !email || !password || !confirmPassword || !phone) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'Vui lòng điền đầy đủ thông tin'
+            })
+        } else if(!isCheckEmail) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'Email không đúng định dạng'
+            })
+        } else if(password !== confirmPassword) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'Mật khẩu và xác nhận mật khẩu không khớp'
+            });
+        }
+        const userResponse  = await UserService.createUser(req.body); //đợi service xử lý logic
+        return res.status(200).json(userResponse);
+    } catch (err) {
+        return res.status(404).json({
+            message: err.message // Hiển thị lỗi chi tiết hơn
         });
+    }
+}
+
+const loginUser = async (req, res) => {
+    try {
+        const { name, email, password, confirmPassword, phone } = req.body;
+        const reg =
+        /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+        const isCheckEmail = reg.test(email);
+        if(!name || !email || !password || !confirmPassword || !phone) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'Vui lòng điền đầy đủ thông tin'
+            })
+        } else if(!isCheckEmail) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'Email không đúng định dạng'
+            })
+        }
+        const userResponse  = await UserService.loginUser(req.body); //đợi service xử lý logic
+        return res.status(200).json(userResponse);
     } catch (err) {
         return res.status(404).json({
             message: err.message // Hiển thị lỗi chi tiết hơn
@@ -16,5 +58,6 @@ const createUser = async (req, res) => {
 }
 
 module.exports = {
-    createUser
+    createUser,
+    loginUser
 }
