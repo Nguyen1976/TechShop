@@ -76,9 +76,30 @@ const deleteProduct = async (req, res) => {
     }
 }
 
+//product/get-all?page=0&limit=5&sort=desc&sort=name
+const getAllProducts = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 0;
+        const limit = parseInt(req.query.limit) || 2; 
+        const sort = req.query.sort;
+        const filter = req.query.filter;
+
+        const respoon  = await ProductService.getAllProducts(limit, page, sort, filter);
+
+        return res.status(200).json(respoon);
+        
+    } catch (err) {
+        return res.status(404).json({
+            message: err.message // Hiển thị lỗi chi tiết hơn
+        });
+    }
+}
+
+
 module.exports = {
     createProduct,
     updateProduct,
     getDetailProduct,
-    deleteProduct
+    deleteProduct,
+    getAllProducts
 }

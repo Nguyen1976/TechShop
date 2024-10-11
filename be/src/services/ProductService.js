@@ -106,10 +106,68 @@ const getDetailProduct = (id) => {
     })
 }
 
+const getAllProducts = (limit, page, sort, filter) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const totalProduct = await Product.countDocuments();
+            if(filter) {
+                const label = filter[0];
+                const allProductFilter = await Product.find({
+                    [label]: { '$regex': filter[1] }
+                })
+                    .limit(limit)
+                    .skip(page * limit);
+
+                resolve({
+                    status: 'OK',
+                    message: 'get all product gilter success',
+                    data: allProductFilter,
+                    total: totalProduct,
+                    pageCurrent: page + 1,
+                    totalPages: Math.ceil(totalProduct / limit)
+                })
+            }
+
+            if(sort) {
+                const objectSort = {};
+                objectSort[sort[1]] = sort[0]; 
+                const allProductSort = await Product.find()
+                    .limit(limit)
+                    .skip(page * limit)
+                    .sort(objectSort);
+                resolve({
+                    status: 'OK',
+                    message: 'get all product sort success',
+                    data: allProductSort,
+                    total: totalProduct,
+                    pageCurrent: page + 1,
+                    totalPages: Math.ceil(totalProduct / limit)
+                })
+            }
+
+            const allProduct = await Product.find()
+                .limit(limit)
+                .skip(page * limit);
+
+            resolve({
+                status: 'OK',
+                message: 'get all product success',
+                data: allProduct,
+                total: totalProduct,
+                pageCurrent: page + 1,
+                totalPages: Math.ceil(totalProduct / limit)
+            })
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
 
 module.exports = {
     createProduct,
     updateProduct,
     getDetailProduct,
-    deleteProduct
+    deleteProduct,
+    getAllProducts
 }
