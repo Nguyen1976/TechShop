@@ -142,6 +142,7 @@ const getAllUser = () => {
         }
     })
 }
+
 const getDetailsUser = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -154,10 +155,9 @@ const getDetailsUser = (id) => {
                 });
             }
 
-
             resolve({
                 status: 'OK',
-                message: 'delete user success',
+                message: 'get details user success',
                 data: user
             })
         } catch (e) {

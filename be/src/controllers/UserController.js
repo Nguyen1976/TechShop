@@ -1,4 +1,5 @@
 const UserService = require('../services/UserService');
+const JwtService = require('../services/JwtService');
 
 const createUser = async (req, res) => {
     try {
@@ -115,7 +116,6 @@ const getAllUser = async (req, res) => {
 const getDetailsUser = async (req, res) => {
     try {
         const userId = req.params.id;
-        const token = req.heaers;
         if(!userId) {
             return res.status(400).json({
                 status: 'ERR',
@@ -132,6 +132,27 @@ const getDetailsUser = async (req, res) => {
     }
 }
 
+const refreshToken = async (req, res) => {
+    try {
+        const token = req.heaers.token.split(' ')[1];
+        if(!token) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'Không có token'
+            })
+        }
+
+        const userResponse  = await JwtService.refreshToken(token);
+        return res.status(200).json(userResponse);
+    } catch (err) {
+        return res.status(404).json({
+            message: err.message // Hiển thị lỗi chi tiết hơn
+        });
+    }
+}
+
+
+
 
 
 module.exports = {
@@ -140,5 +161,6 @@ module.exports = {
     updateUser,
     deleteUser,
     getAllUser,
-    getDetailsUser
+    getDetailsUser,
+    refreshToken
 }
