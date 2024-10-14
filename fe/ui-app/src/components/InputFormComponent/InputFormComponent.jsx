@@ -1,11 +1,10 @@
-import { Input } from 'antd';
 import React from 'react';
 import { useState } from 'react';
 import { WrapperInputStyle } from './style';
 
 
 function InputFormComponent( props ) {
-    const [ valueInput, setValueInput ] = useState('');
+    const [ valueInput ] = useState('');
     const { placeholder = 'Nhập text', ...rest } = props
     // const [ placeholder = 'Nhập text' ] = props;
 
