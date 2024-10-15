@@ -34,11 +34,11 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const { name, email, password, confirmPassword, phone } = req.body;
+        const { email, password } = req.body;
         const reg =
         /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
         const isCheckEmail = reg.test(email);
-        if(!name || !email || !password || !confirmPassword || !phone) {
+        if(!email || !password) {
             return res.status(400).json({
                 status: 'ERR',
                 message: 'Vui lòng điền đầy đủ thông tin'

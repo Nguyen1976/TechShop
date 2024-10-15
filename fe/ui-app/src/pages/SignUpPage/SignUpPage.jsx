@@ -3,25 +3,81 @@ import { WrapperContainerLeft, WrapperContainerRigth, WrapperTextLight } from ".
 import { Image } from "antd";
 import signIn from '../../assets/images/signIn.png';
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useMutationHooks } from "../../hooks/userMutationHook";
+import * as UserService from '../../services/UserService';
+
 
 function SignUpPage() {
+    const navigate = useNavigate();
+    const [ email, setEmail ] = useState('');
+    const [ password, setPassword ] = useState('');
+    const [ confirmPassword, setConfirmPassword ] = useState('');
+    const [ name, setName ] = useState('');
+    const [ phone, setPhone ] = useState('');
+
+    const mutation = useMutationHooks(
+        data => UserService.signUpUser(data)
+    )
+
+    const { data } = mutation;
+
+    const handleNavigateSignIn = () => {
+        navigate('/sign-in');
+    }
+
+    const handleOnchangeEmail = (e) => {
+        setEmail(e.target.value);
+    }
+
+    const handleOnchangePassword = (e) => {
+        setPassword(e.target.value);
+    }
+
+    const handleOnchangeConfirmPassword = (e) => {
+        setConfirmPassword(e.target.value);
+    }
+
+    const handleOnchangeName = (e) => {
+        setName(e.target.value);
+    }
+    const handleOnchangePhone = (e) => {
+        setPhone(e.target.value);
+    }
+
+    const handleSignUp = () => {
+        mutation.mutate({ 
+            name,
+            email, 
+            password,
+            confirmPassword,
+            phone
+        });
+    }
+
+    console.log(email, password, confirmPassword)
+
     return (  
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.2)' }}>
             <div style={{ backgroundColor: '#fff', display: 'flex', height: '450px' }}>
                 <WrapperContainerLeft>
                     <h1>Xin chào</h1>
                     <p>Đăng nhập vào tạo tài khoản</p>
-                    <InputFormComponent placeholder="abc@gmail.com"/>
-                    <InputFormComponent placeholder="password"/>
-                    <InputFormComponent placeholder="confirm password"/>
+                    <InputFormComponent placeholder="tên" onChange={handleOnchangeName}/>
+                    <InputFormComponent placeholder="abc@gmail.com" onChange={handleOnchangeEmail}/>
+                    <InputFormComponent placeholder="password" onChange={handleOnchangePassword}/>
+                    <InputFormComponent placeholder="confirm password" onChange={handleOnchangeConfirmPassword}/>
+                    <InputFormComponent placeholder="phone" onChange={handleOnchangePhone}/>
+                    {data?.status === 'ERR' && <div style={{color: 'red'}}>{data?.message}</div>}
                     <ButtonComponent 
                         style={{ backgroundColor: 'rgb(255, 57, 69)', color: "#fff", width: '220px', padding: '25px 0', fontSize: '15px'}}
                         textButton="Đăng ký" 
+                        onClick={handleSignUp}
                     />
                     <div>
-                        <WrapperTextLight>Quên mật khẩu</WrapperTextLight>
                         <p style={{ fontSize: '14px' }}>
-                            Bạn đã có tài khoản <WrapperTextLight>Đăng nhập</WrapperTextLight>
+                            Bạn đã có tài khoản <WrapperTextLight onClick={handleNavigateSignIn}>Đăng nhập</WrapperTextLight>
                         </p>
                     </div>
                 </WrapperContainerLeft>

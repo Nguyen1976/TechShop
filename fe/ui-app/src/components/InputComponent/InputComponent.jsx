@@ -7,7 +7,7 @@ function InputComponent({ size, placeholder, bordered, style, ...props }) {
             placeholder={placeholder} 
             bordered={bordered}
             style={style}
-            {...props}
+            {...props}a
         />
     );
 }

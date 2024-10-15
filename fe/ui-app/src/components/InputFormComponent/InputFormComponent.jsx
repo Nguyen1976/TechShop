@@ -1,16 +1,17 @@
-import React from 'react';
-import { useState } from 'react';
+import React, {} from 'react';
 import { WrapperInputStyle } from './style';
 
-
-function InputFormComponent( props ) {
-    const [ valueInput ] = useState('');
-    const { placeholder = 'Nhập text', ...rest } = props
-    // const [ placeholder = 'Nhập text' ] = props;
+function InputFormComponent(props) {
+    const { placeholder = 'Nhập text', onChange, value, ...rest } = props;
 
     return (  
         <div style={{ margin: '10px 0' }}>
-            <WrapperInputStyle placeholder={placeholder} value={valueInput} {...rest}/>
+            <WrapperInputStyle 
+                placeholder={placeholder} 
+                value={value} 
+                onChange={onChange}
+                {...rest} 
+            />
         </div>
     );
 }
