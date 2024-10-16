@@ -4,9 +4,10 @@ import { Image } from "antd";
 import signIn from '../../assets/images/signIn.png';
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutationHooks } from "../../hooks/userMutationHook";
 import * as UserService from '../../services/UserService';
+import * as message from '../../components/Message/Message'
 
 
 function SignUpPage() {
@@ -21,7 +22,17 @@ function SignUpPage() {
         data => UserService.signUpUser(data)
     )
 
-    const { data } = mutation;
+    const { data, isSuccess, isError } = mutation;
+
+    useEffect(() => {
+        if(isSuccess) {
+            message.success('Đăng ký thành công');
+            navigate('/sign-in');
+        }
+        if(isError) {
+            message.error(isError);
+        }
+    }, [isSuccess, isError]);
 
     const handleNavigateSignIn = () => {
         navigate('/sign-in');

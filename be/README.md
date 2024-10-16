@@ -18,5 +18,9 @@
 - Dùng để xác thực người dùng lưu thông tin xác thực như id hoặc email,  quyền hạn
 - Nó chứa thời gian hết hạn, giúp máy chủ kiểm tra xem token hợp lệ không, nếu hết token người dùng sẽ phải đăng nhập lại
 
-## Khác nhau giữa access-token và refresh_token
+## Khác nhau giữa access_token và refresh_token
 - at có thời gian ngắn và cứ sau 1h thì sẽ rt 1 lần điều này giúp cho quản lý bảo mật tốt vì khi để lộ token thì hacker chỉ có thể dùng nó sau 1h và sau đó token sẽ bị vô hiệu hóa và rt có thời gian dài để có thể duy trì việc cấp token mới và khi rt hết hạn người dùng phải đăng nhập và xác thực lại thông tin
+
+
+## Bảo mật người dùng
+- access_token lưu ở localstorage, refresh_token lưu ở cookie

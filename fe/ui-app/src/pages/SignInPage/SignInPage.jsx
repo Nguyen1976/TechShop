@@ -4,14 +4,18 @@ import { Image } from "antd";
 import signIn from '../../assets/images/signIn.png';
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as UserService from '../../services/UserService';
 import { useMutationHooks } from "../../hooks/userMutationHook";
 import LoadingComponent from "../../components/LoadingComponent/LoadingComponent";
+import { jwtDecode } from 'jwt-decode';
+import { useDispatch } from 'react-redux'
+import { updateUser } from "../../redux/slices/userSlice";
 
 function SignInPage() {
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
+    const dispatch = useDispatch();
 
     const navigate = useNavigate();
 
@@ -19,7 +23,29 @@ function SignInPage() {
         data => UserService.loginUser(data)
     )
 
-    const { data, isLoading } = mutation;
+    const { data, isSuccess, isError } = mutation;
+
+    useEffect(() => {
+        if (isSuccess) {
+            navigate('/');
+            localStorage.setItem('access_token', data?.access_token);
+            if(data?.access_token) {
+                const decoded = jwtDecode(data?.access_token);//Thông tin người dùng được dịch từ access token nó trả về id và quyền hạn
+                if(decoded?.id) {
+                    handleGetDetailUser(decoded?.id, data?.access_token);
+                }
+            }
+        }
+        if (isError) {
+            console.error(data);
+        }
+    }, [isError, isSuccess]);
+
+    const handleGetDetailUser = async (id, token) => {
+        const res = await UserService.getDetailsUser(id, token)
+        dispatch(updateUser({...res.data, access_token: token}));
+        
+    }
     
     const handleNavigateSignUp = () => {
         navigate('/sign-up');

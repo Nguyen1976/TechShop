@@ -50,7 +50,15 @@ const loginUser = async (req, res) => {
             })
         }
         const userResponse  = await UserService.loginUser(req.body); //đợi service xử lý logic
-        return res.status(200).json(userResponse);
+        const { refresh_token, ...newRespon } = userResponse;
+
+        res.cookie('refresh_token', refresh_token, {
+            HttpOnly: true,
+            Secure: true,
+            SameSite: 'Strict'
+        });
+
+        return res.status(200).json(newRespon);
     } catch (err) {
         return res.status(404).json({
             message: err.message // Hiển thị lỗi chi tiết hơn
@@ -134,7 +142,7 @@ const getDetailsUser = async (req, res) => {
 
 const refreshToken = async (req, res) => {
     try {
-        const token = req.heaers.token.split(' ')[1];
+        const token = req.cookies.refresh_token;
         if(!token) {
             return res.status(400).json({
                 status: 'ERR',
