@@ -10,7 +10,7 @@ import { useMutationHooks } from "../../hooks/userMutationHook";
 import LoadingComponent from "../../components/LoadingComponent/LoadingComponent";
 import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux'
-import { updateUser } from "../../redux/slices/userSlice";
+import { updateUser } from "../../redux/slices/userSlice"
 
 function SignInPage() {
     const [ email, setEmail ] = useState('');
@@ -28,7 +28,7 @@ function SignInPage() {
     useEffect(() => {
         if (isSuccess) {
             navigate('/');
-            localStorage.setItem('access_token', data?.access_token);
+            localStorage.setItem('access_token', JSON.stringify(data?.access_token));
             if(data?.access_token) {
                 const decoded = jwtDecode(data?.access_token);//Thông tin người dùng được dịch từ access token nó trả về id và quyền hạn
                 if(decoded?.id) {

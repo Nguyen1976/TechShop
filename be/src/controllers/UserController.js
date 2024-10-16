@@ -54,7 +54,7 @@ const loginUser = async (req, res) => {
 
         res.cookie('refresh_token', refresh_token, {
             HttpOnly: true,
-            Secure: true,
+            Secure: false,
             SameSite: 'Strict'
         });
 
