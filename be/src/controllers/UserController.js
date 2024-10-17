@@ -159,6 +159,19 @@ const refreshToken = async (req, res) => {
     }
 }
 
+const logoutUser = async (req, res) => {
+    try {
+        res.clearCookie('refresh_token');
+        return res.status(200).json({
+            message: 'logout successfullly'
+        });
+    } catch (err) {
+        return res.status(404).json({
+            message: err.message // Hiển thị lỗi chi tiết hơn
+        });
+    }
+}
+
 
 
 
@@ -170,5 +183,6 @@ module.exports = {
     deleteUser,
     getAllUser,
     getDetailsUser,
-    refreshToken
+    refreshToken,
+    logoutUser
 }

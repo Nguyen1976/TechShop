@@ -16,7 +16,7 @@ function App() {
 
   //khi reload lại trang sẽ phải get token lưu trong local và set lại trong store
   useEffect(() => {
-    let {storageData, decoded} = handleDecoded();
+    let {storageData, decoded} = handleDecoded() || {};
     if(decoded?.id) {
       handleGetDetailUser(decoded?.id, storageData);
     }
@@ -44,7 +44,7 @@ function App() {
 
   UserService.axiosJWT.interceptors.request.use(async (config) => {
     const currentTime = new Date();
-    const { storageData, decoded } = handleDecoded();
+    const { decoded } = handleDecoded();
     if(decoded?.exp < currentTime.getTime() / 1000) {
       const data = await UserService.refreshToken();
       config.headers['token'] = `Bearer ${data.access_token}`

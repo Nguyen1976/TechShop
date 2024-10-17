@@ -1,20 +1,49 @@
-import React from 'react';
-import { Badge, Col } from 'antd';
+import React, { useState } from 'react';
+import { Badge, Col, Popover } from 'antd';
 import { WrapperHeader, WrapperHeaderAccount, WrapperTextHeader, WrapperTextHeaderCenter, WrapperTextHeaderSmall } from './style';
 import { CaretDownOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import ButtonInputSearch from '../ButtonInputSearch/ButtonInputSearch';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import * as UserService from '../../services/UserService';
+import { resetUser } from '../../redux/slices/userSlice';
+import LoadingComponent from '../LoadingComponent/LoadingComponent';
+import ButtonComponent from '../ButtonComponent/ButtonComponent';
+
 
 
 
 function HeaderComponent() {
     const navigate = useNavigate();
-    const user = useSelector((state) => state.user)
+    const user = useSelector((state) => state.user);
+    const dispatch = useDispatch();
+    const [ loading, setLoading ] = useState(false);
 
     const handleNavigateLogin = () => {
         navigate('/sign-in');
     }
+
+    const handleLogout = async () => {
+        setLoading(true);
+        await UserService.logoutUser;
+        dispatch(resetUser());
+        localStorage.removeItem('access_token');
+        handleNavigateLogin();
+        setLoading(false);
+    }
+
+    const content = (
+        <>
+            <div>
+                <ButtonComponent textButton={'Đăng xuẩt'} size={15} onClick={handleLogout}>
+                </ButtonComponent>
+            </div>
+            <div>
+                <ButtonComponent textButton={'Thông tin người dùng'} onClick={() => navigate('/profile-user')}>
+                </ButtonComponent>
+            </div>
+        </>
+    )
     
     return (  
         <>
@@ -32,21 +61,25 @@ function HeaderComponent() {
                     />
                 </Col>
                 <WrapperTextHeaderCenter span={8}>
-                    <WrapperHeaderAccount>
-                        <UserOutlined style={{ fontSize: '20px', marginLeft: '10px' }} />
-                        {user?.name ? (
-                            <div style={{cursor: 'pointer'}}>{user.name}</div>
-                        ) : (
-                            <div onClick={handleNavigateLogin} style={{cursor: 'pointer'}}>
-                            <WrapperTextHeaderSmall>Đăng nhập/Đăng ký</WrapperTextHeaderSmall>
-                            <div> 
-                                <WrapperTextHeaderSmall>Tài khoản</WrapperTextHeaderSmall>
-                                <CaretDownOutlined />
+                    <LoadingComponent isLoading={loading}>
+                        <WrapperHeaderAccount>
+                            <UserOutlined style={{ fontSize: '20px', marginLeft: '10px' }} />
+                            {user?.access_token ? (
+                                <Popover placement="bottom" content={content}>
+                                    <div style={{cursor: 'pointer'}}>{user.name}</div>
+                                </Popover>
+                            ) : (
+                                <div onClick={handleNavigateLogin} style={{cursor: 'pointer'}}>
+                                <WrapperTextHeaderSmall>Đăng nhập/Đăng ký</WrapperTextHeaderSmall>
+                                <div> 
+                                    <WrapperTextHeaderSmall>Tài khoản</WrapperTextHeaderSmall>
+                                    <CaretDownOutlined />
+                                </div>
                             </div>
-                        </div>
-                        )}
-                        
-                    </WrapperHeaderAccount>
+                            )}
+                            
+                        </WrapperHeaderAccount>
+                    </LoadingComponent>
                     <div style={{ marginLeft: '20px' }}>
                         <div>
                             <Badge count={4} size='small'>
