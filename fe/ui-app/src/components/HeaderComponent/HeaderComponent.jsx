@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Badge, Col, Popover } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Badge, Col, Popover, Image } from 'antd';
 import { WrapperHeader, WrapperHeaderAccount, WrapperTextHeader, WrapperTextHeaderCenter, WrapperTextHeaderSmall } from './style';
 import { CaretDownOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import ButtonInputSearch from '../ButtonInputSearch/ButtonInputSearch';
@@ -12,12 +12,13 @@ import ButtonComponent from '../ButtonComponent/ButtonComponent';
 
 
 
-
 function HeaderComponent() {
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const [ loading, setLoading ] = useState(false);
+    const [ userName, setUserName ] = useState('');
+    const [ userAvatar, setUserAvatar ] = useState('');
 
     const handleNavigateLogin = () => {
         navigate('/sign-in');
@@ -31,6 +32,11 @@ function HeaderComponent() {
         handleNavigateLogin();
         setLoading(false);
     }
+
+    useEffect(() => {
+        setUserName(user?.name);
+        setUserAvatar(user?.avatar);
+    }, [user?.name, user?.avatar])
 
     const content = (
         <>
@@ -63,10 +69,20 @@ function HeaderComponent() {
                 <WrapperTextHeaderCenter span={8}>
                     <LoadingComponent isLoading={loading}>
                         <WrapperHeaderAccount>
-                            <UserOutlined style={{ fontSize: '20px', marginLeft: '10px' }} />
+                            {userAvatar ? (
+                                <img src={userAvatar} style={{
+                                    height: '30px',
+                                    width: '30px',
+                                    borderRadius: '50%',
+                                    objectFit: 'cover'
+                                }} alt="avatar"/>
+                            ) : (
+                                <UserOutlined style={{ fontSize: '20px', marginLeft: '10px' }} />
+                            )
+                            }
                             {user?.access_token ? (
                                 <Popover placement="bottom" content={content}>
-                                    <div style={{cursor: 'pointer'}}>{user.name}</div>
+                                    <div style={{cursor: 'pointer'}}>{userName}</div>
                                 </Popover>
                             ) : (
                                 <div onClick={handleNavigateLogin} style={{cursor: 'pointer'}}>

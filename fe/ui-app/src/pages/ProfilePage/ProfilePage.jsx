@@ -9,6 +9,7 @@ import { UploadOutlined} from '@ant-design/icons';
 import * as UserService from '../../services/UserService';
 import { useMutationHooks } from "../../hooks/userMutationHook";
 import * as message from '../../components/Message/Message'
+import { getBase64 } from '../../utils';
 
 
 
@@ -28,7 +29,10 @@ function ProfilePage() {
     const dispatch = useDispatch();
 
     const mutation = useMutationHooks(
-        (id, data) => UserService.updateUser(user.id, data)
+        (data) => {
+            const { id, access_token, ...rests } = data
+            UserService.updateUser(id, rests, access_token)
+        }
     )
     const { data, isSuccess, isError } = mutation;
 
@@ -71,11 +75,16 @@ function ProfilePage() {
         setAddress(e.target.value);
     }
 
+    const handleOnchangeAvatart = async ({ fileList }) => {
+        const file = fileList[0];
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj);
+        }
+        setAvatar(file.preview)
+    }
+
     const handleUpdate = () => {
-        mutation.mutate(
-            user.id,
-            { name, email, phone, address }
-        );
+        mutation.mutate({ id: user?.id, email, name, phone, address, avatar, access_token: user?.access_token })
     }
 
     return (  
@@ -129,7 +138,7 @@ function ProfilePage() {
                     </WrapperInput>
                     <WrapperInput>
                         <WrapperLabel htmlFor="avatar">Avatar</WrapperLabel>
-                        <WrapperUploadFile maxCount={1}>
+                        <WrapperUploadFile onChange={handleOnchangeAvatart} maxCount={1}>
                             <Button icon={<UploadOutlined />}>Select File</Button>
                         </WrapperUploadFile>
                         {avatar && (
@@ -142,6 +151,7 @@ function ProfilePage() {
                         )}
                         {/* <InputFormComponent style={{ width: '300px' }} id="avatar" value={avatar} onChange={handleOnchangeAvatar} /> */}
                         <ButtonComponent
+                            onClick={handleUpdate}
                             size={40}
                             styleButton={{
                                 height: '30px',
