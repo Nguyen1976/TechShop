@@ -1,50 +1,50 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+dotenv.config();
 
-
-//Kiểm tra admin
 const authMiddleWare = (req, res, next) => {
-    const token = req.headers.token.split(' ')[1];
-    jwt.verify(token, process.env.ACCESS_TOKEN, function(err, user) {
-        if(err) {
-            return res.status(403).json({
-                status: 'ERR',
-                message: 'Token không hợp lệ'
-            });
-        }
-        if(user?.isAdmin) {
-            next();
-        } else {
-            return res.status(403).json({
-                status: 'ERR',
-                message: 'Token không phải admin'
-            });
-        }
-    });
-}
+  const token = req.headers.authorization.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
+    if (err) {
+      return res.status(404).json({
+        message: "The authemtication",
+        status: "ERROR",
+      });
+    }
+    if (user?.isAdmin) {
+      next();
+    } else {
+      return res.status(404).json({
+        message: "The authemtication",
+        status: "ERROR",
+      });
+    }
+  });
+};
 
-//Sử dụng khi muốn lấy thông tin chi tiết của người dùng
 const authUserMiddleWare = (req, res, next) => {
-    const token = req.headers.token.split(' ')[1];
-    const userId = req.params.id;
-    jwt.verify(token, process.env.ACCESS_TOKEN, function(err, user) {
-        if(err) {
-            return res.status(403).json({
-                status: 'ERR',
-                message: 'Token không hợp lệ'
-            });
-        }
-        if(user?.isAdmin || user?.id === userId) {
-            next();
-        } else {
-            return res.status(403).json({
-                status: 'ERR',
-                message: 'Token không phải admin'
-            });
-        }
-    });
-}
+  const token = req.headers.authorization.split(" ")[1];
+  const userId = req.params.id;
+  jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
+    if (err) {
+        console.log(user?.isAdmin, user?.id === userId)
+      return res.status(404).json({
+        message: "The authemtication",
+        status: "ERROR",
+      });
+    }
+    if (user?.isAdmin || user?.id === userId) {
+      next();
+    } else {
+      return res.status(404).json({
+        message: "The authemtication",
+        status: "ERROR",
+      });
+    }
+  });
+};
 
 module.exports = {
-    authMiddleWare,
-    authUserMiddleWare
-}
+  authMiddleWare,
+  authUserMiddleWare,
+};

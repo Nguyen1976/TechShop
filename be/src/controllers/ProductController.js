@@ -1,105 +1,126 @@
-const ProductService = require('../services/ProductService');
+const ProductService = require('../services/ProductService')
 
 const createProduct = async (req, res) => {
-    const { name, image, type, price, countInStock, rating, description } = req.body;
-    if (!name ||!image ||!type ||!price ||!countInStock ||!rating ||!description) {
-        return res.status(400).json({
-            message: 'Vui lòng điền đầy đủ thông tin'
-        });
-    }
     try {
-        const respon  = await ProductService.createProduct(req.body); //đợi service xử lý logic
-        return res.status(200).json(respon);
-    } catch (err) {
+        const { name, image, type, countInStock, price, rating, description, discount } = req.body
+        if (!name || !image || !type || !countInStock || !price || !rating || !discount) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The input is required'
+            })
+        }
+        const response = await ProductService.createProduct(req.body)
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(404).json({
-            message: err.message // Hiển thị lỗi chi tiết hơn
-        });
+            message: e
+        })
     }
 }
 
 const updateProduct = async (req, res) => {
     try {
-        const productId = req.params.id;
-        const data = req.body;
-
-        if(!productId) {
-            return res.status(400).json({
+        const productId = req.params.id
+        const data = req.body
+        if (!productId) {
+            return res.status(200).json({
                 status: 'ERR',
-                message: 'Lỗi không có productId'
+                message: 'The productId is required'
             })
         }
-
-        const respon  = await ProductService.updateProduct(productId, data);
-        return res.status(200).json(respon);
-    } catch (err) {
+        const response = await ProductService.updateProduct(productId, data)
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(404).json({
-            message: err.message // Hiển thị lỗi chi tiết hơn
-        });
+            message: e
+        })
     }
 }
 
-const getDetailProduct = async (req, res) => {
+const getDetailsProduct = async (req, res) => {
     try {
-        const productId = req.params.id;
-        if(!productId) {
-            return res.status(400).json({
+        const productId = req.params.id
+
+        if (!productId) {
+            return res.status(200).json({
                 status: 'ERR',
-                message: 'Lỗi không có productId'
+                message: 'The productId is required'
             })
         }
-
-        const respon  = await ProductService.getDetailProduct(productId);
-        return res.status(200).json(respon);
-    } catch (err) {
+        const response = await ProductService.getDetailsProduct(productId)
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(404).json({
-            message: err.message // Hiển thị lỗi chi tiết hơn
-        });
+            message: e
+        })
     }
 }
 
 const deleteProduct = async (req, res) => {
     try {
-        const productId = req.params.id;
-        if(!productId) {
-            return res.status(400).json({
+        const productId = req.params.id
+        if (!productId) {
+            return res.status(200).json({
                 status: 'ERR',
-                message: 'Lỗi không có productId'
+                message: 'The productId is required'
             })
         }
-
-        const respon  = await ProductService.deleteProduct(productId);
-        return res.status(200).json(respon);
-    } catch (err) {
+        const response = await ProductService.deleteProduct(productId)
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(404).json({
-            message: err.message // Hiển thị lỗi chi tiết hơn
-        });
+            message: e
+        })
     }
 }
 
-//product/get-all?page=0&limit=5&sort=desc&sort=name
-const getAllProducts = async (req, res) => {
+const deleteMany = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 0;
-        const limit = parseInt(req.query.limit) || 2; 
-        const sort = req.query.sort;
-        const filter = req.query.filter;
-
-        const respoon  = await ProductService.getAllProducts(limit, page, sort, filter);
-
-        return res.status(200).json(respoon);
-        
-    } catch (err) {
+        const ids = req.body.ids
+        if (!ids) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The ids is required'
+            })
+        }
+        const response = await ProductService.deleteManyProduct(ids)
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(404).json({
-            message: err.message // Hiển thị lỗi chi tiết hơn
-        });
+            message: e
+        })
     }
 }
 
+const getAllProduct = async (req, res) => {
+    try {
+        const { limit, page, sort, filter } = req.query
+        const response = await ProductService.getAllProducts(Number(limit) || null, Number(page) || 0, sort, filter)
+        return res.status(200).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const getAllType = async (req, res) => {
+    try {
+        const response = await ProductService.getAllType()
+        return res.status(200).json(response)
+    } catch (e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
 
 module.exports = {
     createProduct,
     updateProduct,
-    getDetailProduct,
+    getDetailsProduct,
     deleteProduct,
-    getAllProducts
+    getAllProduct,
+    deleteMany,
+    getAllType
 }

@@ -83,7 +83,7 @@ const updateProduct = (id, data) => {
     })
 }
 
-const getDetailProduct = (id) => {
+const getDetailsProduct = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const product = await Product.findOne({_id: id});
@@ -110,64 +110,42 @@ const getAllProducts = (limit, page, sort, filter) => {
     return new Promise(async (resolve, reject) => {
         try {
             const totalProduct = await Product.countDocuments();
-            if(filter) {
+            let query = {};
+
+            if (filter) {
                 const label = filter[0];
-                const allProductFilter = await Product.find({
-                    [label]: { '$regex': filter[1] }
-                })
-                    .limit(limit)
-                    .skip(page * limit);
-
-                resolve({
-                    status: 'OK',
-                    message: 'get all product gilter success',
-                    data: allProductFilter,
-                    total: totalProduct,
-                    pageCurrent: page + 1,
-                    totalPages: Math.ceil(totalProduct / limit)
-                })
+                query[label] = { '$regex': filter[1], '$options': 'i' }; 
             }
 
-            if(sort) {
-                const objectSort = {};
-                objectSort[sort[1]] = sort[0]; 
-                const allProductSort = await Product.find()
-                    .limit(limit)
-                    .skip(page * limit)
-                    .sort(objectSort);
-                resolve({
-                    status: 'OK',
-                    message: 'get all product sort success',
-                    data: allProductSort,
-                    total: totalProduct,
-                    pageCurrent: page + 1,
-                    totalPages: Math.ceil(totalProduct / limit)
-                })
-            }
-
-            const allProduct = await Product.find()
+            let productsQuery = Product.find(query)
                 .limit(limit)
                 .skip(page * limit);
 
+            if (sort) {
+                const objectSort = {};
+                objectSort[sort[1]] = sort[0]; 
+                productsQuery = productsQuery.sort(objectSort);
+            }
+
+            const products = await productsQuery;
             resolve({
                 status: 'OK',
-                message: 'get all product success',
-                data: allProduct,
+                message: filter ? 'get all product filter success' : (sort ? 'get all product sort success' : 'get all product success'),
+                data: products,
                 total: totalProduct,
                 pageCurrent: page + 1,
                 totalPages: Math.ceil(totalProduct / limit)
-            })
+            });
         } catch (e) {
             reject(e);
         }
-    })
-}
-
+    });
+};
 
 module.exports = {
     createProduct,
     updateProduct,
-    getDetailProduct,
+    getDetailsProduct,
     deleteProduct,
     getAllProducts
 }
