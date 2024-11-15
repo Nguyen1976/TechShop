@@ -1,52 +1,53 @@
-const jwt = require('jsonwebtoken')
-const dotenv = require('dotenv');
-dotenv.config()
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+dotenv.config();
 
-const genneralAccessToken = async (payload) => {
-    const access_token = jwt.sign({
-        ...payload
-    }, process.env.ACCESS_TOKEN, { expiresIn: '1d' })
+const generateAccessToken = async (payload) => {
+  try {
+    const token = jwt.sign(payload, process.env.ACCESS_TOKEN, {
+      expiresIn: "1d",
+    });
 
-    return access_token
-}
+    return token;
+  } catch (error) {
+    console.error("Error generating token:", error); // In lỗi nếu có
+  }
+};
 
-const genneralRefreshToken = async (payload) => {
-    const refresh_token = jwt.sign({
-        ...payload
-    }, process.env.REFRESH_TOKEN, { expiresIn: '365d' })
+// Tạo Refresh Token
+const generateRefreshToken = async (payload) => {
+  return jwt.sign(payload, process.env.REFRESH_TOKEN, {
+    expiresIn: "365d",
+  });
+};
 
-    return refresh_token
-}
+// Dịch vụ làm mới Access Token khi refresh token hợp lệ
+const refreshTokenJwtService = async (token) => {
+  try {
+    // Xác minh refresh token
+    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN);
 
-const refreshTokenJwtService = (token) => {
-    return new Promise((resolve, reject) => {
-        try {
-            jwt.verify(token, process.env.REFRESH_TOKEN, async (err, user) => {
-                if (err) {
-                    resolve({
-                        status: 'ERR',
-                        message: 'The authemtication'
-                    })
-                }
-                const access_token = await genneralAccessToken({
-                    id: user?.id,
-                    isAdmin: user?.isAdmin
-                })
-                resolve({
-                    status: 'OK',
-                    message: 'SUCESS',
-                    access_token
-                })
-            })
-        } catch (e) {
-            reject(e)
-        }
-    })
+    // Tạo access token mới
+    const access_token = await generateAccessToken({
+      id: decoded.id,
+      isAdmin: decoded.isAdmin,
+    });
 
-}
+    return {
+      status: "OK",
+      message: "SUCCESS",
+      access_token,
+    };
+  } catch (err) {
+    return {
+      status: "ERR",
+      message: "Authentication failed",
+    };
+  }
+};
 
 module.exports = {
-    genneralAccessToken,
-    genneralRefreshToken,
-    refreshTokenJwtService
-}
+  generateAccessToken,
+  generateRefreshToken,
+  refreshTokenJwtService,
+};

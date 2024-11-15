@@ -1,6 +1,6 @@
 const User = require("../models/UserModel");
 const bcrypt = require("bcrypt");
-const { genneralAccessToken, genneralRefreshToken } = require("./JwtService");
+const { generateAccessToken, generateRefreshToken } = require("./JwtService");
 
 const createUser = (newUser) => {
   return new Promise(async (resolve, reject) => {
@@ -41,7 +41,6 @@ const loginUser = (userLogin) => {
       const checkUser = await User.findOne({
         email: email,
       });
-      console.log(checkUser);
       if (checkUser === null) {
         resolve({
           status: "ERR",
@@ -56,12 +55,12 @@ const loginUser = (userLogin) => {
           message: "The password or user is incorrect",
         });
       }
-      const access_token = await genneralAccessToken({
+      const access_token = await generateAccessToken({
         id: checkUser.id,
         isAdmin: checkUser.isAdmin,
       });
 
-      const refresh_token = await genneralRefreshToken({
+      const refresh_token = await generateRefreshToken({
         id: checkUser.id,
         isAdmin: checkUser.isAdmin,
       });

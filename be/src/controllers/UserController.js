@@ -35,33 +35,28 @@ const createUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-    const isCheckEmail = reg.test(email);
-    if (!email || !password) {
-      return res.status(200).json({
-        status: "ERR",
-        message: "The input is required",
-      });
-    } else if (!isCheckEmail) {
-      return res.status(200).json({
-        status: "ERR",
-        message: "The input is email",
-      });
-    }
+    console.log("Email:", email, "Password:", password); // Kiểm tra dữ liệu gửi lên
     const response = await UserService.loginUser(req.body);
+    console.log("Login Response:", response); // In ra phản hồi từ UserService
+
+    if (!response) {
+      throw new Error("No response from UserService");
+    }
+
     const { refresh_token, ...newReponse } = response;
-    console.log(response);
     res.cookie("refresh_token", refresh_token, {
       httpOnly: true,
-      secure: false,
+      secure: false, // Đảm bảo đây đúng cho môi trường phát triển
       sameSite: "strict",
       path: "/",
     });
     return res.status(200).json({ ...newReponse, refresh_token });
   } catch (e) {
+    console.error("Error in loginUser:", e);
     return res.status(500).json({
       status: "ERR",
       message: e.message || "Internal Server Error",
+      stack: e.stack || "", // In thêm stack trace
     });
   }
 };
@@ -163,18 +158,36 @@ const getDetailsUser = async (req, res) => {
 
 const refreshToken = async (req, res) => {
   try {
+    // Lấy token từ header Authorization
     const token = req.headers.authorization?.split(" ")[1];
+
+    // Kiểm tra nếu token không tồn tại
     if (!token) {
-      return res.status(200).json({
+      return res.status(400).json({
         status: "ERR",
-        message: "The token is required",
+        message: "Token is required",
       });
     }
+
+    // Gọi service để làm mới token
     const response = await JwtService.refreshTokenJwtService(token);
-    return res.status(200).json(response);
+
+    // Nếu response từ service thành công, trả về token mới
+    if (response.status === "OK") {
+      return res.status(200).json(response);
+    } else {
+      // Nếu có lỗi xảy ra trong việc làm mới token
+      return res.status(401).json({
+        status: "ERR",
+        message: response.message || "Authentication failed",
+      });
+    }
   } catch (e) {
-    return res.status(404).json({
-      message: e,
+    // Xử lý các lỗi không mong muốn
+    console.error(e); // Log lỗi ra server để dễ dàng kiểm tra
+    return res.status(500).json({
+      status: "ERR",
+      message: "Internal server error",
     });
   }
 };
@@ -201,9 +214,8 @@ const searchUsers = async (req, res) => {
     }
 
     const users = await User.find({
-      name: { $regex: nameQuery, $options: 'i' }  // Tìm kiếm không phân biệt hoa thường
+      name: { $regex: nameQuery, $options: "i" }, // Tìm kiếm không phân biệt hoa thường
     });
-
 
     res.json(users);
   } catch (error) {
@@ -211,6 +223,7 @@ const searchUsers = async (req, res) => {
     res.status(500).json({ error: "Server error", details: error.message });
   }
 };
+
 module.exports = {
   createUser,
   loginUser,
@@ -221,5 +234,5 @@ module.exports = {
   refreshToken,
   logoutUser,
   deleteMany,
-  searchUsers,
+  searchUsers
 };
