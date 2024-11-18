@@ -5,7 +5,7 @@ dotenv.config();
 const generateAccessToken = async (payload) => {
   try {
     const token = jwt.sign(payload, process.env.ACCESS_TOKEN, {
-      expiresIn: "1d",
+      expiresIn: "30d",
     });
 
     return token;
@@ -17,7 +17,7 @@ const generateAccessToken = async (payload) => {
 // Tạo Refresh Token
 const generateRefreshToken = async (payload) => {
   return jwt.sign(payload, process.env.REFRESH_TOKEN, {
-    expiresIn: "365d",
+    expiresIn: "360d",
   });
 };
 

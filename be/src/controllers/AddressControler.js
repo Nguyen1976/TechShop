@@ -1,4 +1,5 @@
 const Address = require("../models/AddressModel");
+const AddressService = require("../services/AddressService");
 
 const createAddress = async (req, res) => {
   const { userId, addressData } = req.body; // Lấy thông tin từ body
@@ -51,7 +52,31 @@ const getAddress = async (req, res) => {
   }
 };
 
+const updateAddress = async (req, res) => {
+  const { addressId } = req.params;
+  const data = req.body;
+  try {
+    const respon = await AddressService.updateAddress(addressId, data);
+    if (respon && respon.data) {
+      // Trả về dữ liệu đã được lọc
+      res.status(200).json({
+        status: respon.status,
+        message: respon.message,
+        data: respon.data.toObject ? respon.data.toObject() : respon.data,
+      });
+    } else {
+      res.status(404).json({ message: "Address not found" });
+    }
+  } catch (error) {
+    console.error("Error updating address:", error);
+    res
+      .status(500)
+      .json({ message: "Error updating address", error: error.message });
+  }
+};
+
 module.exports = {
   createAddress,
   getAddress,
+  updateAddress,
 };

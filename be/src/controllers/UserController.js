@@ -35,21 +35,22 @@ const createUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log("Email:", email, "Password:", password); // Kiểm tra dữ liệu gửi lên
     const response = await UserService.loginUser(req.body);
-    console.log("Login Response:", response); // In ra phản hồi từ UserService
 
     if (!response) {
       throw new Error("No response from UserService");
     }
 
     const { refresh_token, ...newReponse } = response;
-    res.cookie("refresh_token", refresh_token, {
+
+    const safeRefreshToken = encodeURIComponent(refresh_token);
+    res.cookie("refresh_token", safeRefreshToken, {
       httpOnly: true,
       secure: false, // Đảm bảo đây đúng cho môi trường phát triển
-      sameSite: "strict",
+      sameSite: "Strict",
       path: "/",
     });
+
     return res.status(200).json({ ...newReponse, refresh_token });
   } catch (e) {
     console.error("Error in loginUser:", e);
@@ -234,5 +235,5 @@ module.exports = {
   refreshToken,
   logoutUser,
   deleteMany,
-  searchUsers
+  searchUsers,
 };

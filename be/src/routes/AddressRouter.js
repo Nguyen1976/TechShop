@@ -8,5 +8,6 @@ const { authUserMiddleWare } = require("../middleware/authMiddleware");
 
 router.post("/create-address", authUserMiddleWare, AddressController.createAddress);
 router.get("/:userId", authUserMiddleWare, AddressController.getAddress);
+router.put('/update-address/:addressId', AddressController.updateAddress)
 
 module.exports = router;
