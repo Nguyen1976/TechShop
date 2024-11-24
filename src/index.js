@@ -10,12 +10,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 8000;
 
-app.use(
-  cors({
-    origin: "http://localhost:3000", // URL của frontend
-    credentials: true, // Cho phép gửi cookie
-  })
-);
+app.use(cors());
 
 app.use(express.json({ limit: "50mb" })); // Giới hạn kích thước JSON payload
 app.use(express.urlencoded({ limit: "50mb", extended: true })); // Giới hạn kích thước form data payload và hỗ trợ cấu trúc dữ liệu phức tạp
