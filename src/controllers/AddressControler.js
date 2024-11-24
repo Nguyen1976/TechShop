@@ -3,7 +3,7 @@ const AddressService = require("../services/AddressService");
 
 const createAddress = async (req, res) => {
   const { userId, addressData } = req.body; // Lấy thông tin từ body
-
+  console.log(userId, addressData)
   // Kiểm tra xem userId và addressData có đầy đủ không
   if (!userId || !addressData) {
     return res
@@ -17,6 +17,8 @@ const createAddress = async (req, res) => {
       user: userId, // ID người dùng
       ...addressData, // Các trường khác như name, city, district, v.v.
     });
+
+    console.log(newAddress)
 
     // Lưu đối tượng Address vào cơ sở dữ liệu
     await newAddress.save();
