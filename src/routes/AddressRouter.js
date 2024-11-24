@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const AddressController = require("../controllers/AddressControler");
+const AddressController = require("../controllers/AddressControler.js");
 
 
 
