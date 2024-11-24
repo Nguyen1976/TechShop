@@ -3,7 +3,6 @@ const router = express.Router();
 
 const AddressController = require("../controllers/AddressControler");
 
-const { authUserMiddleWare } = require("../middleware/authMiddleware");
 
 
 router.post("/create-address", AddressController.createAddress);
