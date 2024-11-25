@@ -1,7 +1,7 @@
 - Thunder client giống như postman dùng để kiểm tra các res từ phía client (dùng để kiểm tra api)
 
 
-## Luồng hoặt động
+## Luồng hoạt động
 - Khi client gửi res api/user tạo mới người dùng:
     + Router nhận yêu cầu vào index rồi chạy vào Router tương ứng(UserRouter)
     + Từ router chạy vào controller(UserController) 
