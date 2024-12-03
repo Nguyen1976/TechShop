@@ -88,7 +88,10 @@ const createOrder = (newOrder) => {
 
         if (createdOrder) {
           try {
-            await EmailService.sendEmailCreateOrder('nguyen2202794@gmail.com', orderItems);
+            await EmailService.sendEmailCreateOrder(
+              "nguyen2202794@gmail.com",
+              orderItems
+            );
             resolve({
               status: "OK",
               message: "success",
@@ -203,13 +206,11 @@ const cancelOrderDetails = (id, data) => {
           { new: true }
         );
         if (productData) {
-          order = await Order.findByIdAndDelete(id);
-          if (order === null) {
-            resolve({
-              status: "ERR",
-              message: "The order is not defined",
-            });
-          }
+          order = await Order.findByIdAndUpdate(
+            id,
+            { canceled: true }, // Cập nhật trường 'canceled' thành true
+            { new: true } // Tùy chọn để trả về đối tượng đã cập nhật
+          );
         } else {
           return {
             status: "OK",

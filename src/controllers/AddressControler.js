@@ -3,7 +3,6 @@ const AddressService = require("../services/AddressService");
 
 const createAddress = async (req, res) => {
   const { userId, addressData } = req.body; // Lấy thông tin từ body
-  console.log(userId, addressData)
   // Kiểm tra xem userId và addressData có đầy đủ không
   if (!userId || !addressData) {
     return res
@@ -18,7 +17,7 @@ const createAddress = async (req, res) => {
       ...addressData, // Các trường khác như name, city, district, v.v.
     });
 
-    console.log(newAddress)
+    console.log(newAddress);
 
     // Lưu đối tượng Address vào cơ sở dữ liệu
     await newAddress.save();
@@ -35,16 +34,16 @@ const createAddress = async (req, res) => {
 
 const getAddress = async (req, res) => {
   const { userId } = req.params;
-
   try {
-    const addresses = await Address.find({ user: userId });
-    // Kiểm tra nếu không tìm thấy địa chỉ nào
-    if (addresses.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No addresses found for this user." });
-    }
-    res.status(200).json(addresses);
+    // Lấy danh sách địa chỉ với phân trang
+    const addresses = await Address.find({ user: userId }).sort({
+      default: -1,
+    });
+
+    // Trả về các địa chỉ cùng thông tin phân trang (ví dụ: page, limit)
+    res.status(200).json({
+      addresses,
+    });
   } catch (error) {
     console.error("Error fetching addresses:", error);
     res
@@ -70,7 +69,7 @@ const getAddressDefault = async (req, res) => {
       .status(500)
       .json({ message: "Error fetching addresses", error: error.message });
   }
-}
+};
 
 const updateAddress = async (req, res) => {
   const { addressId } = req.params;
@@ -95,11 +94,26 @@ const updateAddress = async (req, res) => {
   }
 };
 
+const deleteAddress = async (req, res) => {
+  const { addressId } = req.params;
+  try {
+    await Address.deleteOne({ _id: addressId });
 
+    res.status(200).json({
+      message: "delete address successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting address:", error);
+    res
+      .status(500)
+      .json({ message: "Error deleting address", error: error.message });
+  }
+};
 
 module.exports = {
   createAddress,
   getAddress,
   updateAddress,
-  getAddressDefault
+  getAddressDefault,
+  deleteAddress,
 };

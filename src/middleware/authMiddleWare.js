@@ -34,7 +34,7 @@ const authMiddleWare = (req, res, next) => {
 // Middleware kiểm tra quyền truy cập của người dùng
 const authUserMiddleWare = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1]; // Kiểm tra nếu header authorization có tồn tại không
-  const userId = req.params.id;
+  const userId = req.params.id || req.params.userId;
 
   if (!token) {
     return res.status(401).json({

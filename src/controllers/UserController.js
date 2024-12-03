@@ -1,6 +1,7 @@
 const UserService = require("../services/UserService");
 const JwtService = require("../services/JwtService");
 const User = require("../models/UserModel.js");
+const { verifyGoogleToken } = require("../utils/verifyGoogleToken");
 
 const createUser = async (req, res) => {
   try {
@@ -59,6 +60,40 @@ const loginUser = async (req, res) => {
       message: e.message || "Internal Server Error",
       stack: e.stack || "", // In thêm stack trace
     });
+  }
+};
+
+const loginWithGoogle = async (req, res) => {
+  const { tokenId } = req.body;
+
+  try {
+    // 1. Xác thực token với Google
+    const googleUser = await verifyGoogleToken(tokenId);
+
+    // 2. Kiểm tra email trong hệ thống
+    let user = await User.findOne({ email: googleUser.email });
+
+    if (!user) {
+      // Tạo người dùng mới nếu chưa tồn tại
+      user = await User.create({
+        email: googleUser.email,
+        name: googleUser.name,
+        avatar: googleUser.picture,
+        isAdmin: false,
+      });
+    }
+
+    // 3. Tạo Access Token và Refresh Token của bạn
+    const accessToken = await JwtService.generateAccessToken({ id: user._id });
+    const refreshToken = await JwtService.generateRefreshToken({ id: user._id });
+
+    
+    // 4. Trả token cho client
+    res.json({ accessToken, refreshToken, user });
+  } catch (error) {
+    res
+      .status(401)
+      .json({ message: "Google login failed", error: error.message });
   }
 };
 
@@ -236,4 +271,5 @@ module.exports = {
   logoutUser,
   deleteMany,
   searchUsers,
+  loginWithGoogle,
 };

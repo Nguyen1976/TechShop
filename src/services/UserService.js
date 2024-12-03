@@ -1,5 +1,5 @@
 const User = require("../models/UserModel");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { generateAccessToken, generateRefreshToken } = require("./JwtService");
 
 const createUser = (newUser) => {
@@ -71,6 +71,7 @@ const loginUser = (userLogin) => {
         isAdmin: checkUser.isAdmin,
         access_token,
         refresh_token,
+        id: checkUser.id,
       });
     } catch (e) {
       reject(e);

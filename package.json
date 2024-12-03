@@ -10,7 +10,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "axios": "^1.7.8",
+    "bcryptjs": "^2.4.3",
     "be": "file:",
     "body-parser": "^1.20.3",
     "cookie-parser": "^1.4.7",
